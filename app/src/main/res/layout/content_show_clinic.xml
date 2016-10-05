@@ -12,4 +12,42 @@
     tools:context="team.mbl404.hcare.ShowClinic"
     tools:showIn="@layout/activity_show_clinic">
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:enabled="false"
+        android:textColor="@android:color/black"
+        android:id="@+id/header"/>
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:layout_below="@id/header"
+        android:textColor="@android:color/black"
+        android:id="@+id/phone"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:layout_below="@id/phone"
+        android:textColor="@android:color/black"
+        android:id="@+id/email"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:layout_below="@id/email"
+        android:textColor="@android:color/black"
+        android:id="@+id/website"/>
+
+    <fragment
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/website"
+        class="com.google.android.gms.maps.SupportMapFragment" />
+
 </RelativeLayout>

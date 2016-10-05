@@ -17,6 +17,7 @@ public class SearchClinics extends AppCompatActivity{
 
     ArrayList<String> clinics = new ArrayList<>();
     ListView list;
+    DBHelper db;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,26 +28,21 @@ public class SearchClinics extends AppCompatActivity{
         setContentView(R.layout.main_container);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if (db==null) {
+            db = new DBHelper(this);
+            clinics = db.getAllClinics();
+        }
         list = (ListView) findViewById(R.id.clinicList);
-        addClinics();
         ArrayAdapter ad = new ArrayAdapter(this,android.R.layout.simple_list_item_1, clinics);
         list.setAdapter(ad);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int entryID, long arg3) {
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 Intent intent = new Intent(getApplicationContext(),ShowClinic.class);
-                intent.putExtra("entry", entryID);
+                intent.putExtra("clinic", db.getClinic(list.getItemAtPosition(position).toString()));
                 startActivity(intent);
             }
         });
-    }
-
-    private void addClinics(){
-        clinics.add("Clinic 1");
-        clinics.add("Clinic 2");
-        clinics.add("Clinic 3");
-        clinics.add("Clinic 4");
-        clinics.add("Clinic 5");
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

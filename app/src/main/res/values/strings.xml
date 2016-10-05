@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">HCare</string>
     <string name="view_favorites">View Favorites</string>
+    <string name="addFav">Add to Favorites</string>
+    <string name="remFav">Remove from Favorites</string>
     <string name="view_all">View All Clinics</string>
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
-        AIzaSyDSi45qzGJXSpOdlNsGXqkT0alAccKWLpQ
+        AIzaSyCrkjUA2fjGdy0Qb1E_tGsSB0q-hBcjLnQ
     </string>
     <integer name="google_play_services_version">9452000</integer>
     <string name="title_activity_show_clinic">ShowClinic</string>
