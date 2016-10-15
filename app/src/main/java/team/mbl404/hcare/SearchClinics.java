@@ -30,19 +30,13 @@ public class SearchClinics extends AppCompatActivity{
         setSupportActionBar(toolbar);
         if (db==null) {
             db = new DBHelper(this);
-            clinics = db.getAllClinics();
         }
-        list = (ListView) findViewById(R.id.clinicList);
-        ArrayAdapter ad = new ArrayAdapter(this,android.R.layout.simple_list_item_1, clinics);
-        list.setAdapter(ad);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                Intent intent = new Intent(getApplicationContext(),ShowClinic.class);
-                intent.putExtra("clinic", db.getClinic(list.getItemAtPosition(position).toString()));
-                startActivity(intent);
-            }
-        });
+        showAll();
+    }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        showAll();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -55,10 +49,35 @@ public class SearchClinics extends AppCompatActivity{
 
         switch (item.getItemId()) {
             case R.id.viewFavorites:
+                showFavorites();
                 break;
             case R.id.viewAll:
+                showAll();
                 break;
         }
         return true;
+    }
+
+    //Return predictive results for display
+    private void showAll(){
+        clinics = db.getAllClinics();
+        setList();
+    }
+    private void showFavorites(){
+        clinics = db.getFavorites();
+        setList();
+    }
+    private void setList(){
+        list = (ListView) findViewById(R.id.clinicList);
+        ArrayAdapter ad = new ArrayAdapter(this,android.R.layout.simple_list_item_1, clinics);
+        list.setAdapter(ad);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                Intent intent = new Intent(getApplicationContext(),ShowClinic.class);
+                intent.putExtra("clinic", db.getClinic(list.getItemAtPosition(position).toString()));
+                startActivity(intent);
+            }
+        });
     }
 }

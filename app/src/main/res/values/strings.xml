@@ -4,9 +4,12 @@
     <string name="addFav">Add to Favorites</string>
     <string name="remFav">Remove from Favorites</string>
     <string name="view_all">View All Clinics</string>
+    <string name="call">Call</string>
+    <string name="web">Visit Website</string>
+    <string name="contact">Add Contact</string>
+    <string name="email">Email</string>
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
         AIzaSyCrkjUA2fjGdy0Qb1E_tGsSB0q-hBcjLnQ
     </string>
-    <integer name="google_play_services_version">9452000</integer>
     <string name="title_activity_show_clinic">ShowClinic</string>
 </resources>

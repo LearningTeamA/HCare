@@ -9,26 +9,31 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 
 public class DBHelper extends SQLiteOpenHelper{
-    public static final int    DATABASE_VERSION   = 1;
-    public static final String DATABASE_NAME      = "CLINICS.db";
-    public static final String DB_TABLE_NAME      = "CLINIC_TABLE";
-    public static final String DB_COLUMN_ID       = "ID";
-    public static final String DB_COLUMN_NAME     = "NAME";
-    public static final String DB_COLUMN_ADDRESS  = "ADDRESS";
-    public static final String DB_COLUMN_CITY     = "CITY";
-    public static final String DB_COLUMN_STATE    = "STATE";
-    public static final String DB_COLUMN_ZIP      = "ZIP_CODE";
-    public static final String DB_COLUMN_PHONE    = "TELEPHONE";
-    public static final String DB_COLUMN_EMAIL    = "EMAIL";
-    public static final String DB_COLUMN_WEBSITE  = "WEBSITE";
-    public static final String DB_COLUMN_LATITUDE = "LATITUDE";
-    public static final String DB_COLUMN_LONGITUDE= "LONGITUDE";
+    private static final int    DATABASE_VERSION   = 1;
+    private static final String DATABASE_NAME      = "CLINICS.db";
+    private static final String DB_TABLE_NAME      = "CLINIC_TABLE";
+    private static final String DB_COLUMN_ID       = "ID";
+    private static final String DB_COLUMN_NAME     = "NAME";
+    private static final String DB_COLUMN_ADDRESS  = "ADDRESS";
+    private static final String DB_COLUMN_CITY     = "CITY";
+    private static final String DB_COLUMN_STATE    = "STATE";
+    private static final String DB_COLUMN_ZIP      = "ZIP_CODE";
+    private static final String DB_COLUMN_PHONE    = "TELEPHONE";
+    private static final String DB_COLUMN_EMAIL    = "EMAIL";
+    private static final String DB_COLUMN_WEBSITE  = "WEBSITE";
+    private static final String DB_COLUMN_LATITUDE = "LATITUDE";
+    private static final String DB_COLUMN_LONGITUDE= "LONGITUDE";
+    private static final String DB_COLUMN_FAVORITE = "FAVORITE";
+
+    private static final String DB_PATH = "/data/data/team.mbl404.hcare/databases/"+DATABASE_NAME;
+
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
+    //builds table
     public void onCreate(SQLiteDatabase db) {
         String s_createDB = "create table " +
                 DB_TABLE_NAME      + " (" +
@@ -42,7 +47,8 @@ public class DBHelper extends SQLiteOpenHelper{
                 DB_COLUMN_EMAIL    + " text, " +
                 DB_COLUMN_WEBSITE  + " text, " +
                 DB_COLUMN_LATITUDE + " double, " +
-                DB_COLUMN_LONGITUDE+ " double) ";
+                DB_COLUMN_LONGITUDE+ " double, " +
+                DB_COLUMN_FAVORITE + " integer) ";
         db.execSQL(s_createDB);
         addSampleEntries(db);
     }
@@ -56,8 +62,7 @@ public class DBHelper extends SQLiteOpenHelper{
     public ArrayList<String> getAllClinics() {
         ArrayList<String> array_list = new ArrayList<>();
 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from " + DB_TABLE_NAME + "", null);
+        Cursor res = this.getReadableDatabase().rawQuery("select * from " + DB_TABLE_NAME + "", null);
         res.moveToFirst();
 
         while (!res.isAfterLast()) {
@@ -65,7 +70,21 @@ public class DBHelper extends SQLiteOpenHelper{
             res.moveToNext();
         }
         res.close();
-        db.close();
+        return array_list;
+    }
+
+    public ArrayList<String> getFavorites() {
+        ArrayList<String> array_list = new ArrayList<>();
+
+        Cursor res = this.getReadableDatabase().rawQuery("select * from " + DB_TABLE_NAME +
+                " WHERE "+DB_COLUMN_FAVORITE+" = 1", null);
+        res.moveToFirst();
+
+        while (!res.isAfterLast()) {
+            array_list.add(res.getString(res.getColumnIndex(DB_COLUMN_NAME)));
+            res.moveToNext();
+        }
+        res.close();
         return array_list;
     }
 
@@ -74,7 +93,7 @@ public class DBHelper extends SQLiteOpenHelper{
                 +" WHERE "+DB_COLUMN_NAME+"='"+name+"'",null);
         res.moveToFirst();
         ShowClinic.Clinic result = new ShowClinic.Clinic(
-                res.getInt(res.getColumnIndex(DB_COLUMN_ID)),
+                res.getInt   (res.getColumnIndex(DB_COLUMN_ID)),
                 res.getString(res.getColumnIndex(DB_COLUMN_NAME)),
                 res.getString(res.getColumnIndex(DB_COLUMN_ADDRESS)),
                 res.getString(res.getColumnIndex(DB_COLUMN_CITY)),
@@ -84,12 +103,27 @@ public class DBHelper extends SQLiteOpenHelper{
                 res.getString(res.getColumnIndex(DB_COLUMN_EMAIL)),
                 res.getString(res.getColumnIndex(DB_COLUMN_WEBSITE)),
                 res.getDouble(res.getColumnIndex(DB_COLUMN_LATITUDE)),
-                res.getDouble(res.getColumnIndex(DB_COLUMN_LONGITUDE)));
+                res.getDouble(res.getColumnIndex(DB_COLUMN_LONGITUDE)),
+                res.getInt   (res.getColumnIndex(DB_COLUMN_FAVORITE)));
         res.close();
-
         return result;
     }
 
+    //Reverses the favorite of the entry
+    public static void toggleFavorite(int id, int fav){
+        SQLiteDatabase db = DBHelper.openDB();
+        Cursor res = db.rawQuery("UPDATE "+DB_TABLE_NAME+" SET "+DB_COLUMN_FAVORITE+
+                          " = "+fav+" WHERE "+DB_COLUMN_ID+" = "+id,null);
+        res.moveToFirst();
+        res.close();
+        db.close();
+    }
+
+    //returns open handle
+    public static SQLiteDatabase openDB(){
+        return SQLiteDatabase.openDatabase(DB_PATH,null,SQLiteDatabase.OPEN_READWRITE);
+    }
+    //Adds a new entry
     private boolean addEntry(int id, String name, String addr, String city, String state, int zip,
                             String phone, String email, String web, Double lat, Double lon,
                              SQLiteDatabase db) {
@@ -106,11 +140,13 @@ public class DBHelper extends SQLiteOpenHelper{
         contentValues.put(DB_COLUMN_WEBSITE, web);
         contentValues.put(DB_COLUMN_LATITUDE, lat);
         contentValues.put(DB_COLUMN_LONGITUDE, lon);
+        contentValues.put(DB_COLUMN_FAVORITE, 0);
 
         db.insert(DB_TABLE_NAME, null, contentValues);
         return true;
     }
 
+    //Default sample entries
     private void addSampleEntries(SQLiteDatabase db) {
         addEntry(1,"PA HealthCare Clinic","480 S California Ave Ste 103","Palo Alto","CA",94306,
                 "605-888-8888","paloaltoclinic@gmail.com","http://www.pamf.org/",
