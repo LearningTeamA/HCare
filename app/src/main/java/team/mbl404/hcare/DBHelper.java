@@ -88,6 +88,37 @@ public class DBHelper extends SQLiteOpenHelper{
         return array_list;
     }
 
+    public static ArrayList<String> searchFor(String query){
+        SQLiteDatabase db = DBHelper.openDB();
+        ArrayList<String> results = new ArrayList<>();
+        String base = "SELECT * FROM "+ DB_TABLE_NAME+" ";
+        String[] queries = new String[] {
+                "WHERE "+DB_COLUMN_NAME   +" LIKE '%"+query+"%'",
+                "WHERE "+DB_COLUMN_ADDRESS+" LIKE '%"+query+"%'",
+                "WHERE "+DB_COLUMN_CITY   +" LIKE '%"+query+"%'",
+                "WHERE "+DB_COLUMN_ZIP    +" LIKE '%"+query+"%'",
+                "WHERE "+DB_COLUMN_STATE  +" LIKE '%"+query+"%'"};
+
+        /*
+        This didn't feel like the most efficient way to use SQL search, I was really hoping
+        to find something like an OR function I could use between each of these requests so it
+        could all be combined into a single request. But I guess passing over each column this way
+        isn't so bad.
+         */
+        for (String newQuery : queries) {
+            //Cleanest cursor call yet! Automatically closes curs because of try's resource manager
+            try (Cursor curs = db.rawQuery(base + newQuery, null)) {
+                while (curs.moveToNext()) {
+                    results.add(curs.getString(curs.getColumnIndex(DB_COLUMN_NAME)));
+                }
+            }
+        }
+        db.close();
+
+
+        return results;
+    }
+
     public ShowClinic.Clinic getClinic(String name) {
         Cursor res = this.getReadableDatabase().rawQuery("SELECT * from "+DB_TABLE_NAME
                 +" WHERE "+DB_COLUMN_NAME+"='"+name+"'",null);

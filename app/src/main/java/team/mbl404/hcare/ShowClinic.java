@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -124,6 +125,10 @@ public class ShowClinic extends AppCompatActivity implements Serializable, OnMap
                 clinic.favorite = (clinic.favorite==1)?0:1;
                 DBHelper.toggleFavorite(clinic.id, clinic.favorite);
                 favoriteCheck();
+                if(clinic.favorite==1) Toast.makeText(getApplicationContext(),
+                        "Added clinic to favorites list.", Toast.LENGTH_SHORT).show();
+                else Toast.makeText(getApplicationContext(),
+                        "Removed clinic from favorites list.", Toast.LENGTH_SHORT).show();
             }
         });
     }

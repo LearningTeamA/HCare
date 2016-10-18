@@ -12,4 +12,5 @@
         AIzaSyCrkjUA2fjGdy0Qb1E_tGsSB0q-hBcjLnQ
     </string>
     <string name="title_activity_show_clinic">ShowClinic</string>
+    <string name="searchHint">Name/city/state/zip</string>
 </resources>
